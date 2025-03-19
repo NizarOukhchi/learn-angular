@@ -16,7 +16,11 @@
   <!-- Main content area for router outlet -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Router outlet where components will be rendered based on the current route -->
-    <router-outlet></router-outlet>
+    <!-- <router-outlet></router-outlet> -->
+    <main class="container mx-auto p-4">
+      <h1 class="text-3xl font-bold mb-6">Angular Homes</h1>
+      <app-home-card [home]="Home"></app-home-card>
+    </main>
   </main>
 
   <!-- Footer section -->
