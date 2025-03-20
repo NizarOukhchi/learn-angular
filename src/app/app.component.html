@@ -16,10 +16,11 @@
   <!-- Main content area for router outlet -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Router outlet where components will be rendered based on the current route -->
-    <!--     <router-outlet></router-outlet> -->
-
-    <div class="w-md">
-      <app-home-card [home]="home"></app-home-card>
+    <!-- <router-outlet></router-outlet> -->
+    <div class="max-w-6xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+      @for (home of homes; track home.id) {
+        <app-home-card [home]="home"></app-home-card>
+      }
     </div>
   </main>
 
