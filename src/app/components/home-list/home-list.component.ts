@@ -26,6 +26,8 @@ export class HomeListComponent implements OnInit {
   // Computed values
   hasHomes = computed(() => this.homes().length > 0);
 
+  homesWithPools = computed(() => this.homes().filter(home => home.hasPool));
+
   constructor() {
     // Load favorites from localStorage when component is created
     this.loadFavoritesFromStorage();
@@ -115,8 +117,8 @@ export class HomeListComponent implements OnInit {
     } catch (error) {
       console.error("Error saving favorites to localStorage:", error);
     }
-  }
-  
+  }  
+
   refreshHomes() {
     this.loadHomes();
   }
