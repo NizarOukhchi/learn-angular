@@ -5,7 +5,7 @@ import { Home } from './models/home.type';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HomeCardComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
