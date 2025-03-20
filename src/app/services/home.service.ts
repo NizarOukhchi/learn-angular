@@ -12,7 +12,7 @@ export class HomeService {
 
   constructor(private http: HttpClient) {}
 
-  getHomes(): Observable<Home[]> {
+  getAllHomes(): Observable<Home[]> {
     return this.http.get<Home[]>(this.apiUrl)
   }
 }

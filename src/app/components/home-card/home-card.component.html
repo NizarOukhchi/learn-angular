@@ -1,27 +1,37 @@
-<div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition duration-300">
-  <div class="h-48 overflow-hidden">
-      <img [src]="home.picture" [alt]="home.title" class="w-full h-full object-cover">
-  </div>
-  <div class="flex flex-col gap-3 p-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ home.title }}</h3>
-      <p class="text-gray-600 mb-4 flex items-center gap-2">
-          <lucide-icon [img]="mapPinIcon" class="my-icon" color="gray"></lucide-icon>
-          {{ home.city }}
-      </p>
-      <div class="flex justify-between text-sm text-gray-500 mb-4">
-          <div class="flex items-center gap-2">
-              <lucide-icon [img]="bedIcon" class="my-icon" color="indigo"></lucide-icon>
-              <span class="text-indigo-900 font-medium">{{ home.rooms }} Bedrooms</span>
-          </div>
-          <div class="flex items-center gap-2">
-              <lucide-icon [img]="bathIcon" class="my-icon" color="indigo"></lucide-icon>
-              <span class="text-indigo-900 font-medium">{{ home.bathrooms }} Bathrooms</span>
-          </div>
-          <div class="flex items-center gap-2">
-              <lucide-icon [img]="wavesLadderIcon" class="my-icon" [color]="home.hasPool ? 'blue' : 'gray'"></lucide-icon>
-          </div>
-      </div>
-      <p class="text-gray-700 mb-4 line-clamp-2">{{ home.description }}</p>
-      <button [routerLink]="['/edit', home.id]" class="cursor-pointer w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition duration-300">Edit Listing</button>
-  </div>
+<div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+    <div class="h-48 overflow-hidden relative">
+        <img [src]="home.picture" [alt]="home.title" class="w-full h-full object-cover" />
+        <button
+        (click)="onFavoriteClick()"
+        class="absolute top-2 right-2 p-2 bg-opacity-80 rounded-full shadow-lg hover:bg-opacity-100 transition-all cursor-pointer"
+        aria-label="Toggle favorite"
+        [ngClass]="{
+            'bg-indigo-500': home.isFavorite,
+            'bg-white': !home.isFavorite
+        }">
+        <lucide-icon [img]="Heart" [color]="home.isFavorite ? 'white' : 'gray'" class="w-5 h-5"></lucide-icon>
+        </button>
+    </div>
+    <div class="flex flex-col gap-3 p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ home.title }}</h3>
+        <p class="text-gray-600 mb-4 flex items-center gap-2">
+            <lucide-icon [img]="mapPinIcon" class="my-icon" color="gray"></lucide-icon>
+            {{ home.city }}
+        </p>
+        <div class="flex justify-between text-sm text-gray-500 mb-4">
+            <div class="flex items-center gap-2">
+                <lucide-icon [img]="bedIcon" class="my-icon" color="indigo"></lucide-icon>
+                <span class="text-indigo-900 font-medium">{{ home.rooms }} Bedrooms</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <lucide-icon [img]="bathIcon" class="my-icon" color="indigo"></lucide-icon>
+                <span class="text-indigo-900 font-medium">{{ home.bathrooms }} Bathrooms</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <lucide-icon [img]="wavesLadderIcon" class="my-icon" [color]="home.hasPool ? 'blue' : 'gray'"></lucide-icon>
+            </div>
+        </div>
+        <p class="text-gray-700 mb-4 line-clamp-2">{{ home.description }}</p>
+        <button [routerLink]="['/edit', home.id]" class="cursor-pointer w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition duration-300">Edit Listing</button>
+    </div>
 </div>
