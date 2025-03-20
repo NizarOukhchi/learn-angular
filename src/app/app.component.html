@@ -1,34 +1,46 @@
-<!-- Main application container with Tailwind CSS styling -->
-<div class="min-h-screen bg-gray-100 flex flex-col">
-  <!-- Header section with app title and navigation -->
-  <header class="bg-white shadow-md">
+
+ <!-- Main application container with Tailwind CSS styling
+<div class="min-h-screen bg-gray-100 flex flex-col"> -->
+ <!-- Header section with app title and navigation  -->
+  <!-- <header class="bg-white shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center"> -->
         <!-- App title with link to home page -->
-        <h1 class="text-2xl font-bold text-indigo-600">
+        <!-- <h1 class="text-2xl font-bold text-indigo-600">
           <a>HomeListings</a>
-        </h1>
+        </h1> -->
         <!-- Navigation button to create a new home listing -->
-      </div>
+      <!-- </div>
     </div>
-  </header>
+  </header> -->
 
   <!-- Main content area for router outlet -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> -->
     <!-- Router outlet where components will be rendered based on the current route -->
-    <!--     <router-outlet></router-outlet> -->
-
-    <div class="w-md">
-      <app-home-card [home]="home"></app-home-card>
+    <!-- <router-outlet></router-outlet> -->
+    <!-- <div class="max-w-6xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+      @for (home of homes; track home.id) {
+        <app-home-card [home]="home"></app-home-card>
+      }
     </div>
-  </main>
+  </main> -->
 
   <!-- Footer section -->
-  <footer class="bg-white shadow-inner py-6 mt-auto">
+  <!-- <footer class="bg-white shadow-inner py-6 mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <p class="text-center text-gray-500">
         &copy; 2025 HomeListings - Nizar Oukhchi
       </p>
     </div>
   </footer>
+</div>  -->
+
+<div class="container mx-auto px-4 py-8">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold text-indigo-800">Angular Homes</h1>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <router-outlet></router-outlet>
+  </main>
 </div>
