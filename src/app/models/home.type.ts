@@ -7,4 +7,5 @@ export type Home = {
   bathrooms: number;
   hasPool: boolean;
   picture: string;
+  isFavorite?: boolean;
 };

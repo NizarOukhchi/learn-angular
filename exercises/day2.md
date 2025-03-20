@@ -91,7 +91,7 @@ ng generate component home-list
 Update `home-list.component.ts`:
 
 ```typescript
-import { Component, OnInit, inject, signal, computed } from "@angular/core";
+import { Component, inject, signal, computed } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { HomeCardComponent } from "../home-card/home-card.component";
 import { Home } from "../models/home.type";
@@ -103,7 +103,7 @@ import { Home } from "../models/home.type";
   templateUrl: "./home-list.component.html",
   styleUrl: "./home-list.component.css",
 })
-export class HomeListComponent implements OnInit {
+export class HomeListComponent {
   // Using signals for reactive state
   homes = signal<Home[]>([]);
   isLoading = signal(true);
@@ -229,7 +229,7 @@ import { Home } from "../models/home.type";
   templateUrl: "./home-list.component.html",
   styleUrl: "./home-list.component.css",
 })
-export class HomeListComponent implements OnInit {
+export class HomeListComponent {
   // Inject the service using the new inject function
   private homeService = inject(HomeService);
 
@@ -634,7 +634,7 @@ Now that you have the basic functionality working, try implementing these additi
 1. Add a loading spinner instead of the "Loading homes..." text
 2. Create a computed signal that filters homes with pools
 3. Add a toggle button to show only homes with pools using your computed signal
-4. Add a "Favorites" filter that shows only favorited homes
+4. Add a "Favorites" filter that shows only favorite homes
 5. Create a favorites count indicator in the header
 
 ## Additional Resources
