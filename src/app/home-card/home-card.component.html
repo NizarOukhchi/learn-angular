@@ -1,12 +1,28 @@
 <div
-  class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300"
+  class="h-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300"
 >
-  <div class="h-48 overflow-hidden">
+  <div class="h-48 overflow-hidden relative">
     <img
       [src]="home.picture"
       [alt]="home.title"
       class="w-full h-full object-cover"
     />
+    <!-- Favorite button -->
+    <button
+      (click)="onFavoriteClick()"
+      class="absolute top-2 right-2 p-2 bg-opacity-80 rounded-full shadow-lg hover:bg-opacity-100 transition-all cursor-pointer"
+      aria-label="Toggle favorite"
+      [ngClass]="{
+        'bg-indigo-500': home.isFavorite,
+        'bg-white': !home.isFavorite
+      }"
+    >
+      <lucide-icon
+        [img]="HeartIcon"
+        [color]="home.isFavorite ? 'white' : 'gray'"
+        class="w-5 h-5"
+      ></lucide-icon>
+    </button>
   </div>
 
   <div class="flex flex-col gap-4 p-6">
