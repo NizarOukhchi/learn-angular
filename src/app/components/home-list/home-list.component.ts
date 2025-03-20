@@ -49,7 +49,6 @@ export class HomeListComponent implements OnInit {
     }
     return this.homes().filter(home => home.isFavorite);
   });
-  favoritesCount = computed(() => this.homesFavorites().length);
 
   get homesFavoritesCount() : number {
     return this.homesFavorites().length;
@@ -106,7 +105,6 @@ export class HomeListComponent implements OnInit {
    */
   private addFavoriteStatus(homes: Home[]): Home[] {
     const favorites = this.favoritesSignal();
-    this.favoritesCount = computed(() => this.homesFavorites().length);
 
     return homes.map((home) => ({
       ...home,
