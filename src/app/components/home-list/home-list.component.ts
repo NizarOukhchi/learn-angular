@@ -12,6 +12,15 @@ import { Home } from "../../models/home.type";
   styleUrl: "./home-list.component.css",
 })
 export class HomeListComponent implements OnInit {
+  
+  toggleShowPools($event: Event) {
+    this.showPoolsOnly.set((<HTMLInputElement>$event.target).checked);
+    if (this.showPoolsOnly()) {
+      this.homes.set(this.homesWithPools());
+    } else {
+      this.loadHomes();
+    }
+  }
   // Inject the service using inject function
   private homeService = inject(HomeService);
 
@@ -19,6 +28,7 @@ export class HomeListComponent implements OnInit {
   homes = signal<Home[]>([]);
   isLoading = signal(true);
   error = signal<string | null>(null);
+  showPoolsOnly = signal(false);
 
   // New signal for favorites
   private favoritesSignal = signal<number[]>([]);
