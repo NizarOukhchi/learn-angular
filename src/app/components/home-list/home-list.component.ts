@@ -12,14 +12,9 @@ import { Home } from "../../models/home.type";
   styleUrl: "./home-list.component.css",
 })
 export class HomeListComponent implements OnInit {
-  
-  toggleShowPools($event: Event) {
-    this.showPoolsOnly.set((<HTMLInputElement>$event.target).checked);
-    if (this.showPoolsOnly()) {
-      this.homes.set(this.homesWithPools());
-    } else {
-      this.loadHomes();
-    }
+  constructor() {
+    // Load favorites from localStorage when component is created
+    this.loadFavoritesFromStorage();
   }
   // Inject the service using inject function
   private homeService = inject(HomeService);
@@ -38,9 +33,26 @@ export class HomeListComponent implements OnInit {
 
   homesWithPools = computed(() => this.homes().filter(home => home.hasPool));
 
-  constructor() {
-    // Load favorites from localStorage when component is created
-    this.loadFavoritesFromStorage();
+  toggleShowPools($event: Event) {
+    this.showPoolsOnly.set((<HTMLInputElement>$event.target).checked);
+    if (this.showPoolsOnly()) {
+      this.homes.set(this.homesWithPools());
+    } else {
+      this.loadHomes();
+    }
+  }
+  homesFavorites = computed(() => this.homes().filter(home => home.isFavorite));
+
+  homesFiltered = computed(() => {
+    if (this.showPoolsOnly()) {
+      return this.homesWithPools().filter(home => home.isFavorite);
+    }
+    return this.homes().filter(home => home.isFavorite);
+  });
+  favoritesCount = computed(() => this.homesFavorites().length);
+
+  get homesFavoritesCount() : number {
+    return this.homesFavorites().length;
   }
 
   ngOnInit() {
@@ -94,11 +106,13 @@ export class HomeListComponent implements OnInit {
    */
   private addFavoriteStatus(homes: Home[]): Home[] {
     const favorites = this.favoritesSignal();
+    this.favoritesCount = computed(() => this.homesFavorites().length);
 
     return homes.map((home) => ({
       ...home,
       isFavorite: home.id ? favorites.includes(home.id) : false,
     }));
+
   }
 
   /**
