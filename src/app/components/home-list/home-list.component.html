@@ -1,3 +1,12 @@
+<!-- Favorites count indicator -->
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Home Listings</h1>
+    <div class="flex items-center gap-2">
+        <span class="text-lg">Favorites:</span>
+        <span class="px-3 py-1 bg-blue-600 text-white rounded">{{ homesFavoritesCount }}</span>
+    </div>
+</div>
+
 <!-- Refresh button -->
 <div class="mb-6">
     <button (click)="refreshHomes()" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">Refresh Listings</button>
