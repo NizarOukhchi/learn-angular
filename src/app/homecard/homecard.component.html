@@ -1,0 +1,17 @@
+<div *ngFor="let home of homes" class="border rounded shadow-md p-4 mb-4 bg-white">
+    <!-- Title -->
+    <h2 class="text-xl font-bold text-indigo-600">{{ home.title }}</h2>
+  
+    <!-- Image -->
+    <img [src]="home.picture" alt="{{ home.title }}" class="w-full h-64 object-cover rounded-md my-4">
+  
+    <!-- Details -->
+    <p class="text-gray-700"><strong>Description:</strong> {{ home.description }}</p>
+    <p><strong>City:</strong> {{ home.city }}</p>
+    <p><strong>Rooms:</strong> {{ home.rooms }}</p>
+    <p><strong>Bathrooms:</strong> {{ home.bathrooms }}</p>
+    <p *ngIf="home.hasPool" class="text-green-500 font-semibold">🏊 Has a Pool</p>
+    <p *ngIf="!home.hasPool" class="text-red-500 font-semibold">🚫 No Pool</p>
+    
+  </div>
+  
