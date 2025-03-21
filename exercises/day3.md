@@ -2,584 +2,115 @@
 
 ## Description
 
-This is the take-home exercise for Day 3. Today, you'll build on your progress from Days 1 and 2 by implementing pagination and filtering features to enhance the user experience. You'll learn how to create reusable components and how to implement more advanced API interactions.
+This is the take-home exercise for Day 3. Today, you'll build on your Day 2 progress by implementing pagination and adding a dedicated favorites section to the homes application. These features will enhance the user experience by making it easier to navigate through large sets of data and quickly access favorite properties.
 
 ### Objectives:
 
-- Enhance the home service to support pagination
+- Implement pagination for the homes list
 - Create a reusable pagination component
-- Implement a filter component for searching and filtering homes
-- Handle advanced state management with signals
-- Improve user experience with responsive design
+- Create a favorites section to display favorited homes
+- Update the service layer to support pagination
+- Continue working with Angular signals for reactive state management
+- Apply Angular's control flow syntax to the new components
+- Implement component-based architecture with parent-child relationships
 
 ### What You'll Build:
 
-By the end of this tutorial, your application will allow users to navigate through pages of home listings and filter results based on different criteria such as number of rooms, bathrooms, and location. These features will make your application more user-friendly and practical.
+By the end of this tutorial, your application will have:
+
+- A paginated grid of homes with a user-friendly pagination interface
+- A favorites section that displays homes marked as favorites
+- A hierarchical component structure that separates concerns
 
 Let's get started!
 
-## Step 1: Enhance the Home Service for Pagination
+## Step 1: Update the Home Service for Pagination
 
-First, let's modify our home service to support pagination when fetching data from the API.
+First, let's enhance our home service to support pagination.
 
-### Update the Home Service
+### 1. Modify the Home Service
 
-Modify `home.service.ts` to handle pagination parameters:
+Update `home.service.ts` to support pagination:
 
 ```typescript
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { Observable, map, tap } from "rxjs";
-import { Home } from "../models/home";
-import { signal } from "@angular/core";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Injectable, computed, signal } from "@angular/core";
+import { Home } from "../models/home.type";
+import { finalize } from "rxjs/operators";
+const API_URL = "http://localhost:3000/homes";
 
-interface PaginationData {
-  total: number;
+type PaginatedResponse<T> = {
+  data: T;
   pages: number;
-  currentPage: number;
-}
+  items: number;
+};
 
 @Injectable({
   providedIn: "root",
 })
 export class HomeService {
-  private apiUrl = "http://localhost:3000/homes";
+  paginatedHomes = signal<Home[]>([]);
+  favoritesHomes = computed(() => this.paginatedHomes().filter((home) => home.isFavorite));
+  totalHomes = signal<number>(0);
+  totalPages = signal<number>(0);
+  isLoading = signal<boolean>(false);
+  error = signal<string | null>(null);
 
-  // Define signals for state management
-  private homesSignal = signal<Home[]>([]);
-  private isLoadingSignal = signal(false);
-  private errorSignal = signal<string | null>(null);
-  private paginationDataSignal = signal<PaginationData | null>(null);
+  private favoritesId: number[] = [];
 
-  // Expose readonly signals
-  readonly homes = this.homesSignal.asReadonly();
-  readonly isLoading = this.isLoadingSignal.asReadonly();
-  readonly error = this.errorSignal.asReadonly();
-  readonly paginationData = this.paginationDataSignal.asReadonly();
-
-  constructor(private http: HttpClient) {}
-
-  /**
-   * Fetch homes with pagination and optional filters
-   * @param page The page number to fetch
-   * @param limit Number of items per page
-   * @param filters Optional filters to apply
-   */
-  fetchHomes(page: number = 1, limit: number = 6, filters: Record<string, any> = {}): Observable<Home[]> {
-    this.isLoadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    // Create query parameters
-    const params: Record<string, string> = {
-      _page: page.toString(),
-      _limit: limit.toString(),
-    };
-
-    // Add filters to params
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== null && value !== undefined && value !== "") {
-        params[key] = value.toString();
-      }
-    });
-
-    // Make the request with pagination parameters
-    return this.http
-      .get<Home[]>(this.apiUrl, {
-        params,
-        observe: "response", // Get full response to access headers
-      })
-      .pipe(
-        map((response) => {
-          const homes = response.body || [];
-
-          // Extract total count from headers and calculate pagination data
-          const totalCount = response.headers.get("X-Total-Count");
-          if (totalCount) {
-            const total = parseInt(totalCount, 10);
-            const totalPages = Math.ceil(total / limit);
-
-            this.paginationDataSignal.set({
-              total,
-              pages: totalPages,
-              currentPage: page,
-            });
-          }
-
-          // Update signals
-          this.homesSignal.set(homes);
-          this.isLoadingSignal.set(false);
-
-          return homes;
-        }),
-        // Error handling
-        tap({
-          error: (err) => {
-            this.errorSignal.set("Failed to load homes. Please try again.");
-            this.isLoadingSignal.set(false);
-            console.error("Error fetching homes:", err);
-          },
-        })
-      );
+  constructor(private http: HttpClient) {
+    this.loadFavoritesFromStorage();
   }
 
-  /**
-   * Get all unique cities from the database
-   * Used for filtering options
-   */
-  getAllCities(): Observable<string[]> {
-    return this.http.get<Home[]>(`${this.apiUrl}`).pipe(
-      map((homes) => {
-        // Extract unique cities
-        const citiesSet = new Set(homes.map((home) => home.city));
-        return Array.from(citiesSet).sort();
-      })
+  fetchHomes(page: number = 1, limit: number = 6) {
+    let params = new HttpParams().set("_page", page.toString()).set("_per_page", limit.toString());
+
+    this.isLoading.set(true);
+    return this.http
+      .get<PaginatedResponse<Home[]>>(API_URL, { params })
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.paginatedHomes.set(this.addFavoriteStatus(response.data));
+          this.totalHomes.set(response.items);
+          this.totalPages.set(response.pages);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+        },
+      });
+  }
+
+  toggleFavorite(homeId: number) {
+    if (this.favoritesId.includes(homeId)) {
+      this.favoritesId = this.favoritesId.filter((id) => id !== homeId);
+    } else {
+      this.favoritesId = [...this.favoritesId, homeId];
+    }
+    this.saveFavoritesToStorage();
+    this.paginatedHomes.update((homes) =>
+      homes.map((home) => ({
+        ...home,
+        isFavorite: home.id === homeId ? !home.isFavorite : home.isFavorite,
+      }))
     );
   }
-}
-```
 
-## Step 2: Create a Pagination Component
-
-Now let's create a reusable pagination component that we can use throughout our application.
-
-### 1. Generate the Pagination Component
-
-```bash
-ng generate component components/pagination
-```
-
-### 2. Implement the Pagination Component
-
-First, let's update the TypeScript file:
-
-```typescript
-import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { CommonModule } from "@angular/common";
-
-@Component({
-  selector: "app-pagination",
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: "./pagination.component.html",
-  styleUrl: "./pagination.component.css",
-})
-export class PaginationComponent {
-  @Input() currentPage: number = 1;
-  @Input() totalPages: number = 1;
-  @Output() pageChange = new EventEmitter<number>();
-
-  // Calculated array of page numbers to display
-  get pages(): number[] {
-    const visiblePages = 5; // Number of page buttons to show
-    const pages: number[] = [];
-
-    // Logic to show pages centered around current page
-    let startPage = Math.max(1, this.currentPage - Math.floor(visiblePages / 2));
-    let endPage = Math.min(this.totalPages, startPage + visiblePages - 1);
-
-    // Adjust if we're near the end
-    if (endPage - startPage + 1 < visiblePages) {
-      startPage = Math.max(1, endPage - visiblePages + 1);
-    }
-
-    // Generate page numbers
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-
-    return pages;
+  private loadFavoritesFromStorage(): void {
+    const storedFavorites = localStorage.getItem("favorites");
+    this.favoritesId = storedFavorites ? JSON.parse(storedFavorites) : [];
   }
 
-  /**
-   * Change to the previous page if possible
-   */
-  prevPage(): void {
-    if (this.currentPage > 1) {
-      this.pageChange.emit(this.currentPage - 1);
-    }
-  }
-
-  /**
-   * Change to the next page if possible
-   */
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.pageChange.emit(this.currentPage + 1);
-    }
-  }
-
-  /**
-   * Go to a specific page
-   */
-  goToPage(page: number): void {
-    if (page !== this.currentPage && page >= 1 && page <= this.totalPages) {
-      this.pageChange.emit(page);
-    }
-  }
-}
-```
-
-Now, let's create the template for our pagination component:
-
-```html
-<div class="flex justify-center items-center space-x-2" *ngIf="totalPages > 1">
-  <!-- Previous page button -->
-  <button (click)="prevPage()" [disabled]="currentPage === 1" [class.opacity-50]="currentPage === 1" [class.cursor-not-allowed]="currentPage === 1" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition" aria-label="Previous page">Previous</button>
-
-  <!-- Page number buttons -->
-  <div class="flex space-x-1">
-    @for (page of pages; track page) {
-    <button (click)="goToPage(page)" [class.bg-indigo-600]="page === currentPage" [class.text-white]="page === currentPage" [class.bg-gray-200]="page !== currentPage" [class.hover:bg-gray-300]="page !== currentPage" class="px-3 py-1 rounded transition">{{ page }}</button>
-    }
-  </div>
-
-  <!-- Next page button -->
-  <button (click)="nextPage()" [disabled]="currentPage === totalPages" [class.opacity-50]="currentPage === totalPages" [class.cursor-not-allowed]="currentPage === totalPages" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition" aria-label="Next page">Next</button>
-</div>
-```
-
-## Step 3: Create a Filter Component
-
-Let's create a component that allows users to filter homes based on different criteria.
-
-### 1. Generate the Filter Component
-
-```bash
-ng generate component components/filter
-```
-
-### 2. Create a Filter Options Interface
-
-First, let's define an interface for our filter options. Create a new file `src/app/models/filter-options.ts`:
-
-```typescript
-/**
- * Interface for filter options
- */
-export interface FilterOptions {
-  rooms: number | null;
-  bathrooms: number | null;
-  hasPool: boolean | null;
-  city: string;
-}
-```
-
-### 3. Implement the Filter Component
-
-Update the filter component TypeScript file:
-
-```typescript
-import { Component, EventEmitter, OnInit, Output, inject } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { HomeService } from "../../services/home.service";
-import { FilterOptions } from "../../models/filter-options";
-
-@Component({
-  selector: "app-filter",
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: "./filter.component.html",
-  styleUrl: "./filter.component.css",
-})
-export class FilterComponent implements OnInit {
-  @Output() filterChange = new EventEmitter<FilterOptions>();
-
-  private homeService = inject(HomeService);
-
-  // Filter state
-  filters: FilterOptions = {
-    rooms: null,
-    bathrooms: null,
-    hasPool: null,
-    city: "",
-  };
-
-  // Options for select lists
-  cities: string[] = [];
-  roomOptions = [1, 2, 3, 4, 5, 6];
-  bathroomOptions = [1, 2, 3, 4];
-
-  ngOnInit(): void {
-    // Load cities for the city filter
-    this.loadCities();
-  }
-
-  /**
-   * Load all available cities from the API
-   */
-  loadCities(): void {
-    this.homeService.getAllCities().subscribe({
-      next: (cities) => {
-        this.cities = cities;
-      },
-      error: (err) => {
-        console.error("Error loading cities:", err);
-      },
-    });
-  }
-
-  /**
-   * Apply the current filters
-   */
-  applyFilters(): void {
-    this.filterChange.emit(this.filters);
-  }
-
-  /**
-   * Reset all filters to default values
-   */
-  resetFilters(): void {
-    this.filters = {
-      rooms: null,
-      bathrooms: null,
-      hasPool: null,
-      city: "",
-    };
-    this.filterChange.emit(this.filters);
-  }
-
-  /**
-   * Toggle the pool filter
-   */
-  togglePoolFilter(): void {
-    // Cycle through true, false, null states
-    if (this.filters.hasPool === null) {
-      this.filters.hasPool = true;
-    } else if (this.filters.hasPool === true) {
-      this.filters.hasPool = false;
-    } else {
-      this.filters.hasPool = null;
-    }
-  }
-
-  /**
-   * Get the label for the pool filter button
-   */
-  getPoolFilterLabel(): string {
-    if (this.filters.hasPool === null) {
-      return "Pool: Any";
-    } else if (this.filters.hasPool) {
-      return "Pool: Yes";
-    } else {
-      return "Pool: No";
-    }
-  }
-}
-```
-
-Now, let's create the template for our filter component:
-
-```html
-<div class="bg-white p-4 rounded-lg shadow-md mb-6">
-  <h2 class="text-lg font-semibold mb-4">Filter Homes</h2>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <!-- City filter -->
-    <div>
-      <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
-      <select id="city" [(ngModel)]="filters.city" class="w-full p-2 border border-gray-300 rounded">
-        <option value="">Any city</option>
-        @for (city of cities; track city) {
-        <option [value]="city">{{ city }}</option>
-        }
-      </select>
-    </div>
-
-    <!-- Rooms filter -->
-    <div>
-      <label for="rooms" class="block text-sm font-medium text-gray-700 mb-1">Bedrooms</label>
-      <select id="rooms" [(ngModel)]="filters.rooms" class="w-full p-2 border border-gray-300 rounded">
-        <option [ngValue]="null">Any</option>
-        @for (option of roomOptions; track option) {
-        <option [value]="option">{{ option }}+</option>
-        }
-      </select>
-    </div>
-
-    <!-- Bathrooms filter -->
-    <div>
-      <label for="bathrooms" class="block text-sm font-medium text-gray-700 mb-1">Bathrooms</label>
-      <select id="bathrooms" [(ngModel)]="filters.bathrooms" class="w-full p-2 border border-gray-300 rounded">
-        <option [ngValue]="null">Any</option>
-        @for (option of bathroomOptions; track option) {
-        <option [value]="option">{{ option }}+</option>
-        }
-      </select>
-    </div>
-
-    <!-- Pool filter -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Pool</label>
-      <button (click)="togglePoolFilter()" class="w-full p-2 border border-gray-300 rounded text-left" [class.bg-indigo-100]="filters.hasPool !== null" [class.border-indigo-500]="filters.hasPool !== null">{{ getPoolFilterLabel() }}</button>
-    </div>
-  </div>
-
-  <!-- Filter action buttons -->
-  <div class="flex justify-end space-x-2 mt-4">
-    <button (click)="resetFilters()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded transition">Reset</button>
-    <button (click)="applyFilters()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded transition">Apply Filters</button>
-  </div>
-</div>
-```
-
-## Step 4: Integrate Components in the Home List
-
-Now let's update the HomeListComponent to use our new pagination and filter components:
-
-### 1. Update the Home List Component
-
-Modify `home-list.component.ts`:
-
-```typescript
-import { Component, OnInit, computed, effect, inject, signal } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { HomeService } from "../../services/home.service";
-import { HomeCardComponent } from "../home-card/home-card.component";
-import { PaginationComponent } from "../pagination/pagination.component";
-import { FilterComponent } from "../filter/filter.component";
-import { FilterOptions } from "../../models/filter-options";
-import { Home } from "../../models/home";
-
-@Component({
-  selector: "app-home-list",
-  standalone: true,
-  imports: [CommonModule, HomeCardComponent, PaginationComponent, FilterComponent],
-  templateUrl: "./home-list.component.html",
-  styleUrl: "./home-list.component.css",
-})
-export class HomeListComponent implements OnInit {
-  private homeService = inject(HomeService);
-
-  // Pagination state
-  private currentPageSignal = signal<number>(1);
-  private itemsPerPageSignal = signal<number>(6);
-
-  // Filter state
-  private filtersSignal = signal<FilterOptions>({
-    rooms: null,
-    bathrooms: null,
-    hasPool: null,
-    city: "",
-  });
-
-  // Favorite state (from Day 2)
-  private favoritesSignal = signal<number[]>([]);
-
-  // Expose readonly signals
-  readonly currentPage = this.currentPageSignal.asReadonly();
-  readonly itemsPerPage = this.itemsPerPageSignal.asReadonly();
-  readonly filters = this.filtersSignal.asReadonly();
-  readonly favorites = this.favoritesSignal.asReadonly();
-
-  // Computed value for total pages
-  readonly totalPages = computed(() => this.homeService.paginationData()?.pages || 0);
-
-  constructor() {
-    // Load favorites from localStorage (from Day 2)
-    this.loadFavoritesFromStorage();
-
-    // Effect to reload homes when pagination or filters change
-    effect(() => {
-      this.loadHomes(this.currentPageSignal(), this.itemsPerPageSignal(), this.filtersSignal());
-    });
-  }
-
-  ngOnInit(): void {
-    // Initial load is handled by the effect
-  }
-
-  /**
-   * Load homes with pagination and filters
-   */
-  loadHomes(page: number, limit: number, filters: FilterOptions): void {
-    this.homeService.fetchHomes(page, limit, filters).subscribe({
-      next: (homes) => {
-        // Apply favorite status to homes from Day 2
-        const homesWithFavorites = this.addFavoriteStatus(homes);
-        this.homeService["homesSignal"].set(homesWithFavorites);
-      },
-    });
-  }
-
-  /**
-   * Add favorite status to homes based on favorites signal
-   * (From Day 2)
-   */
   private addFavoriteStatus(homes: Home[]): Home[] {
-    const favorites = this.favoritesSignal();
-
     return homes.map((home) => ({
       ...home,
-      isFavorite: home.id ? favorites.includes(home.id) : false,
+      isFavorite: home.id ? this.favoritesId.includes(home.id) : false,
     }));
   }
 
-  /**
-   * Handle page change event from pagination component
-   */
-  onPageChange(page: number): void {
-    this.currentPageSignal.set(page);
-  }
-
-  /**
-   * Handle filter change event from filter component
-   */
-  onFilterChange(filters: FilterOptions): void {
-    this.filtersSignal.set(filters);
-    // Reset to first page when filters change
-    this.currentPageSignal.set(1);
-  }
-
-  /**
-   * Handle favorite toggle from home card
-   * (From Day 2)
-   */
-  onToggleFavorite(homeId: number): void {
-    const currentFavorites = this.favoritesSignal();
-    const index = currentFavorites.indexOf(homeId);
-
-    if (index === -1) {
-      // Add to favorites
-      this.favoritesSignal.update((favorites) => [...favorites, homeId]);
-    } else {
-      // Remove from favorites
-      this.favoritesSignal.update((favorites) => favorites.filter((id) => id !== homeId));
-    }
-
-    // Update homes with new favorite status
-    const updatedHomes = this.addFavoriteStatus(this.homeService.homes());
-    this.homeService["homesSignal"].set(updatedHomes);
-
-    // Save to localStorage
-    this.saveFavoritesToStorage();
-  }
-
-  /**
-   * Load favorites from localStorage
-   * (From Day 2)
-   */
-  private loadFavoritesFromStorage(): void {
-    try {
-      const storedFavorites = localStorage.getItem("favorites");
-      if (storedFavorites) {
-        const favorites = JSON.parse(storedFavorites);
-        if (Array.isArray(favorites)) {
-          this.favoritesSignal.set(favorites);
-        }
-      }
-    } catch (error) {
-      console.error("Error loading favorites from localStorage:", error);
-    }
-  }
-
-  /**
-   * Save favorites to localStorage
-   * (From Day 2)
-   */
   private saveFavoritesToStorage(): void {
     try {
-      localStorage.setItem("favorites", JSON.stringify(this.favoritesSignal()));
+      localStorage.setItem("favorites", JSON.stringify(this.favoritesId));
     } catch (error) {
       console.error("Error saving favorites to localStorage:", error);
     }
@@ -587,98 +118,431 @@ export class HomeListComponent implements OnInit {
 }
 ```
 
-### 2. Update the Home List Template
+The key points to understand about this service:
 
-Modify `home-list.component.html`:
+- The `paginatedHomes` signal stores the current page of homes
+- The `favoritesHomes` computed signal filters only favorites from the current homes
+- We're using the JSON Server pagination with `_page` and `_per_page` parameters
+- We handle loading states and errors with signals
+- The response from the server includes the total pages and items count
+
+## Step 2: Create the Component Structure
+
+For our application, we'll create a hierarchical component structure:
+
+1. **HomeListComponent**: The parent component that combines favorites and homes grid
+2. **FavoriteHomesComponent**: Displays only favorite homes
+3. **HomesGridComponent**: Shows the paginated grid of all homes with pagination
+4. **PaginationComponent**: Handles the pagination UI and logic
+5. **HomeCardComponent**: Displays a single home card (reused in both FavoritesHome and HomesGrid)
+
+Let's set up each component:
+
+### 1. Update the Home List Component
+
+The HomeListComponent will be the container for both the favorites section and the homes grid:
+
+Update `home-list.component.ts`:
+
+```typescript
+import { Component } from "@angular/core";
+
+import { HomesGridComponent } from "../homes-grid/homes-grid.component";
+import { FavoriteHomesComponent } from "../favorite-homes/favorite-homes.component";
+
+@Component({
+  selector: "app-home-list",
+  imports: [HomesGridComponent, FavoriteHomesComponent],
+  templateUrl: "./home-list.component.html",
+  styleUrl: "./home-list.component.css",
+})
+export class HomeListComponent {}
+```
+
+Update `home-list.component.html`:
 
 ```html
-<div class="container mx-auto p-4">
-  <!-- Filter component -->
-  <app-filter (filterChange)="onFilterChange($event)"></app-filter>
+<div class="flex flex-col gap-8 mx-auto px-4 py-8">
+  <app-favorite-homes></app-favorite-homes>
+  <app-homes-grid></app-homes-grid>
+</div>
+```
 
-  <!-- Loading state -->
-  @if (homeService.isLoading()) {
-  <div class="flex justify-center items-center py-12">
-    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-  </div>
-  }
+### 2. Create the Favorite Homes Component
 
-  <!-- Error state -->
-  @else if (homeService.error()) {
-  <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
-    <p>{{ homeService.error() }}</p>
-  </div>
-  }
+Generate and implement the FavoriteHomesComponent:
 
-  <!-- Homes grid -->
-  @else {
-  <!-- Homes listing -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-    @for (home of homeService.homes(); track home.id) {
-    <app-home-card [home]="home" (toggleFavorite)="onToggleFavorite($event)"></app-home-card>
-    } @empty {
-    <div class="col-span-3 text-center py-12">
-      <p class="text-gray-500">No homes found that match your criteria</p>
-      <button (click)="onFilterChange({rooms: null, bathrooms: null, hasPool: null, city: ''})" class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Reset Filters</button>
-    </div>
+```bash
+ng generate component favorite-homes
+```
+
+Update `favorite-homes.component.ts`:
+
+```typescript
+import { Component, inject } from "@angular/core";
+import { HomeService } from "../services/home.service";
+import { HomeCardComponent } from "../home-card/home-card.component";
+import { Home } from "../models/home.type";
+
+@Component({
+  selector: "app-favorite-homes",
+  imports: [HomeCardComponent],
+  templateUrl: "./favorite-homes.component.html",
+  styleUrl: "./favorite-homes.component.css",
+})
+export class FavoriteHomesComponent {
+  homeService = inject(HomeService);
+  favoriteHomes = this.homeService.favoritesHomes;
+}
+```
+
+Update `favorite-homes.component.html`:
+
+```html
+<div class="w-full mx-auto">
+  <h2 class="text-3xl font-bold mb-6">Favorite Homes</h2>
+  @if (favoriteHomes().length === 0) {
+  <p class="text-gray-500">No favorite homes found.</p>
+  } @else {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (home of favoriteHomes(); track home.id) {
+    <app-home-card [home]="home"></app-home-card>
     }
   </div>
-
-  <!-- Pagination component -->
-  <app-pagination [currentPage]="currentPage()" [totalPages]="totalPages()" (pageChange)="onPageChange($event)"></app-pagination>
   }
 </div>
 ```
 
-## Step 5: Test Your Application
+### 3. Create the Homes Grid Component
 
-### 1. Start the JSON Server and Angular App
+Generate and implement the HomesGridComponent:
 
 ```bash
-# Terminal 1
-npm run server
+ng generate component homes-grid
+```
 
-# Terminal 2
+Update `homes-grid.component.ts`:
+
+```typescript
+import { Component, inject } from "@angular/core";
+import { HomeService } from "../services/home.service";
+import { HomeCardComponent } from "../home-card/home-card.component";
+import { PaginationComponent } from "../pagination/pagination.component";
+@Component({
+  selector: "app-homes-grid",
+  imports: [HomeCardComponent, PaginationComponent],
+  templateUrl: "./homes-grid.component.html",
+  styleUrl: "./homes-grid.component.css",
+})
+export class HomesGridComponent {
+  homeService = inject(HomeService);
+  homes = this.homeService.paginatedHomes;
+  isLoading = this.homeService.isLoading;
+  error = this.homeService.error;
+
+  ngOnInit(): void {
+    this.homeService.fetchHomes();
+  }
+}
+```
+
+Update `homes-grid.component.html`:
+
+```html
+<div class="w-full mx-auto">
+  <h2 class="text-3xl font-bold mb-6">Homes</h2>
+  @if (isLoading()) {
+  <div class="flex justify-center items-center min-h-[200px]">
+    <p class="text-gray-500">Loading homes...</p>
+  </div>
+  } @else if (error()) {
+  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+    <p>{{ error() }}</p>
+  </div>
+  } @else {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (home of homes() ; track home.id) {
+    <app-home-card [home]="home"></app-home-card>
+    } @empty {
+    <p class="text-gray-500 col-span-3 text-center py-12">No homes found. Please check back later.</p>
+    }
+  </div>
+  }
+  <app-pagination></app-pagination>
+</div>
+```
+
+### 4. Create the Pagination Component
+
+Generate and implement the PaginationComponent:
+
+```bash
+ng generate component pagination
+```
+
+Update `pagination.component.ts`:
+
+```typescript
+import { Component, computed, inject } from "@angular/core";
+import { HomeService } from "../services/home.service";
+
+@Component({
+  selector: "app-pagination",
+  imports: [],
+  templateUrl: "./pagination.component.html",
+  styleUrl: "./pagination.component.css",
+})
+export class PaginationComponent {
+  homeService = inject(HomeService);
+  currentPage = 1;
+  totalPages = this.homeService.totalPages.asReadonly();
+  totalHomes = this.homeService.totalHomes.asReadonly();
+  pages = computed(() => {
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
+  });
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.homeService.fetchHomes(page);
+  }
+}
+```
+
+Update `pagination.component.html`:
+
+```html
+<div class="flex justify-center mt-8 space-x-2">
+  <!-- Previous page button -->
+  <button
+    [disabled]="currentPage === 1"
+    (click)="onPageChange(currentPage - 1)"
+    [class]="
+      currentPage === 1
+        ? 'px-3 py-1 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed'
+        : 'px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 cursor-pointer'
+    "
+  >
+    Previous
+  </button>
+
+  <!-- Page number buttons -->
+  @for (page of pages(); track page) {
+  <button
+    (click)="onPageChange(page)"
+    [class]="
+      page === currentPage
+        ? 'px-3 py-1 rounded-md bg-indigo-600 text-white'
+        : 'px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 cursor-pointer'
+    "
+  >
+    {{ page }}
+  </button>
+  }
+
+  <!-- Next page button -->
+  <button
+    type="button"
+    [disabled]="currentPage === totalPages()"
+    (click)="onPageChange(currentPage + 1)"
+    [class]="
+      currentPage === totalPages()
+        ? 'px-3 py-1 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed'
+        : 'px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 cursor-pointer'
+    "
+  >
+    Next
+  </button>
+</div>
+```
+
+### 5. Update the Home Card Component
+
+Update the `home-card.component.ts`:
+
+```typescript
+import { Component, Input, inject } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { LucideAngularModule, MapPin, WavesLadder, Bed, Bath, Heart } from "lucide-angular";
+import { Home } from "../models/home.type";
+import { CommonModule } from "@angular/common";
+import { HomeService } from "../services/home.service";
+
+@Component({
+  selector: "app-home-card",
+  imports: [LucideAngularModule, FormsModule, CommonModule],
+  templateUrl: "./home-card.component.html",
+  styleUrl: "./home-card.component.css",
+})
+export class HomeCardComponent {
+  @Input() home!: Home;
+  homeService = inject(HomeService);
+
+  // Icons list
+  readonly MapPin = MapPin;
+  readonly WavesLadderIcon = WavesLadder;
+  readonly BedIcon = Bed;
+  readonly BathIcon = Bath;
+  readonly HeartIcon = Heart;
+
+  onFavoriteClick(): void {
+    if (!this.home.id) {
+      return;
+    }
+    this.homeService.toggleFavorite(this.home.id);
+  }
+}
+```
+
+Update `home-card.component.html`:
+
+```html
+<div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 h-full">
+  <div class="h-48 overflow-hidden relative">
+    <img [src]="home.picture" [alt]="home.title" class="w-full h-full object-cover" />
+    <!-- Favorite button -->
+    <button
+      (click)="onFavoriteClick()"
+      class="absolute top-2 right-2 p-2 bg-opacity-80 rounded-full shadow-lg hover:bg-opacity-100 transition-all cursor-pointer"
+      aria-label="Toggle favorite"
+      [ngClass]="{
+        'bg-indigo-500': home.isFavorite,
+        'bg-white': !home.isFavorite
+      }"
+    >
+      <lucide-icon [img]="HeartIcon" [color]="home.isFavorite ? 'white' : 'gray'" class="w-5 h-5"></lucide-icon>
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-4 p-6">
+    <div class="flex flex-col gap-1">
+      <h3 class="text-xl font-semibold text-gray-800">{{ home.title }}</h3>
+      <div class="flex gap-1">
+        <lucide-icon [img]="MapPin" class="text-gray-400"></lucide-icon>
+        <p class="text-gray-400 mb">{{ home.city }}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <lucide-icon [img]="BedIcon" class="my-icon" color="indigo"></lucide-icon>
+        <span class="text-indigo-900 font-medium">{{ home.rooms }} Bedrooms</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <lucide-icon [img]="BathIcon" class="my-icon" color="indigo"></lucide-icon>
+        <span class="text-indigo-900 font-medium">{{ home.bathrooms }} Bathrooms</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <lucide-icon [img]="WavesLadderIcon" class="my-icon" [color]="home.hasPool ? 'blue' : 'gray'"></lucide-icon>
+      </div>
+    </div>
+    <p class="text-gray-700 mb-4">{{ home.description }}</p>
+  </div>
+</div>
+```
+
+### 6. Make sure the Home model is defined
+
+Create or update `models/home.type.ts`:
+
+```typescript
+export type Home = {
+  id?: number;
+  title: string;
+  description: string;
+  city: string;
+  rooms: number;
+  bathrooms: number;
+  hasPool: boolean;
+  picture: string;
+  isFavorite?: boolean;
+};
+```
+
+## Step 3: Update the Routes
+
+Make sure the routes are properly configured in `app.routes.ts`:
+
+```typescript
+import { Routes } from "@angular/router";
+import { HomeListComponent } from "./home-list/home-list.component";
+
+export const routes: Routes = [
+  {
+    path: "homes",
+    component: HomeListComponent,
+  },
+  {
+    path: "",
+    redirectTo: "homes",
+    pathMatch: "full",
+  },
+];
+```
+
+## Step 4: Understanding the Component Architecture
+
+Our application follows a hierarchical component architecture:
+
+```
+HomeListComponent
+│
+├── FavoriteHomesComponent
+│   └── HomeCardComponent (for each favorite home)
+│
+└── HomesGridComponent
+    ├── HomeCardComponent (for each home)
+    └── PaginationComponent
+```
+
+This structure has several benefits:
+
+1. **Separation of Concerns**: Each component has a specific responsibility
+2. **Reusability**: The HomeCardComponent is reused in multiple places
+3. **Maintainability**: Changes to one part of the UI don't affect others
+4. **Data Flow**: Data and events flow naturally through the component hierarchy
+
+## Step 5: Understanding Signal-Based State Management
+
+Our application uses Angular's signals for reactive state management. Here's how it works:
+
+1. **Core State in Service**: The HomeService maintains all the core application state
+2. **Computed Signals**: We use computed signals to derive values, like filtering favorites
+3. **Component-Level State**: Components maintain minimal local state (like currentPage)
+4. **Unidirectional Data Flow**: Data flows down from services to components
+5. **Event Handlers**: Components call service methods to trigger state changes
+
+This creates a predictable data flow pattern that makes the application easier to understand and debug.
+
+## Step 6: Test Your Application
+
+### 1. Make sure the JSON server is running:
+
+```bash
+npm run server
+```
+
+### 2. Start the Angular application:
+
+```bash
 npm run start
 ```
 
-### 2. Navigate to Your Application
-
-Open your browser and go to http://localhost:4300 to see your enhanced application with pagination and filtering!
-
-## Understanding the Implementation
-
-### Pagination with JSON Server
-
-JSON Server provides built-in support for pagination using the `_page` and `_limit` parameters. The server also returns a `X-Total-Count` header that we can use to calculate the total number of pages.
-
-### Component Communication
-
-In this implementation, we've created:
-
-1. **Pagination Component**: A reusable component that handles page navigation
-2. **Filter Component**: A component for applying filters to the home listings
-3. **Integration with HomeListComponent**: Managing the state and coordinating between components
-
-### State Management with Signals
-
-We're using Angular's signals for reactive state management:
-
-- **Signals**: We define signals for the current page, items per page, filters, and favorites
-- **Effects**: We use effects to reload homes when pagination or filters change
-- **Computed Values**: We compute values like total pages based on other signals
+Navigate to http://localhost:4300 and test your pagination and favorites functionality.
 
 ## Bonus Challenge
 
-Now that you have a working pagination and filter system, try implementing these additional features:
+Now that you have the basic functionality working, try implementing these additional features:
 
-1. Add URL parameters that reflect the current pagination and filter state
-2. Implement a "sort by" feature that allows users to sort by price, number of rooms, etc.
-3. Create a "favorites" filter that shows only favorited homes (using the functionality from Day 2)
+1. Add sorting capabilities (by number of rooms, city, etc.)
+2. Implement a search bar for keyword search
+3. Create a detail view for each home that shows more information
+4. Add transitions and animations for a smoother user experience
+5. Implement skeleton loading states instead of "Loading..." text
 
 ## Additional Resources
 
-- [Angular Signal Documentation](https://angular.dev/guide/signals)
-- [Angular Routing and Navigation](https://angular.dev/guide/routing)
-- [JSON Server Documentation](https://github.com/typicode/json-server)
-- [Angular FormModule Documentation](https://angular.dev/guide/forms)
+- [Angular Signals Documentation](https://angular.dev/guide/signals)
+- [Angular Component Architecture](https://angular.dev/guide/components)
+- [Angular Routing](https://angular.dev/guide/routing)
+- [Angular's New Control Flow](https://angular.dev/guide/templates/control-flow)
+- [Reactive State Management in Angular](https://blog.angular.io/angular-v16-is-here-4d7a28ec680d#1d34)
