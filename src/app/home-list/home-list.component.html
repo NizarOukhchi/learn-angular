@@ -1,8 +1,25 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  @for (home of homes; track home.id) {
-  <app-home-card
-    [home]="home"
-    (favoriteClick)="toggleFavorite($event)"
-  ></app-home-card>
-  }
-</div>
+    @for (home of homes(); track home.id) {
+      <div class="border rounded shadow-md p-4 mb-4 bg-white">
+        <img [src]="home.picture" alt="{{ home.title }}" class="w-full h-64 object-cover rounded-md my-4">
+        <h2 class="text-2xl font-bold text-indigo-800">{{ home.title }}</h2>
+
+        <p class="text-gray-700"><strong>Description:</strong> {{ home.description }}</p>
+        
+        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"><p><strong>City:</strong> {{ home.city }}</p></span>
+
+        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"><p><strong>Rooms:</strong> {{ home.rooms }}</p></span>
+
+        
+        <span class="inline-block bg-purple-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"><p><strong>Bathrooms:</strong> {{ home.bathrooms }}</p></span>
+
+        <span *ngIf="home.hasPool" class="text-green-500"><p class="inline-block bg-purple-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">🏊 Has a Pool</p></span>
+
+        <span class="inline-block bg-purple-200 rounded-full px-3 py-1 text-sm font-semibold "><p *ngIf="!home.hasPool" class="text-500 font-semibold">🚫 No Pool</p></span>
+
+        
+      </div>
+    } @empty {
+      <p class="text-gray-500 col-span-3 text-center py-12">No homes found. Please check back later.</p>
+    }
+  </div>

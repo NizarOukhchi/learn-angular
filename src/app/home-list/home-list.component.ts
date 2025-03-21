@@ -1,54 +1,25 @@
-import { Component, inject } from '@angular/core';
-import { HomeService } from '../services/home.service';
-import { Home } from '../models/home.type';
-import { HomeCardComponent } from '../home-card/home-card.component';
+import { Component, OnInit, inject, signal } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { HomecardComponent } from "../homecard/homecard.component";
+import { HomeService } from "../service/home.service"; 
+import { Home } from "../models/model.type";
 
 @Component({
-  selector: 'app-home-list',
-  imports: [HomeCardComponent],
-  templateUrl: './home-list.component.html',
-  styleUrl: './home-list.component.css',
+  selector: "app-home-list",
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: "./home-list.component.html",
+  styleUrl: "./home-list.component.css",
 })
-export class HomeListComponent {
-  homeService = inject(HomeService);
-  homes: Home[] = [];
-  favoriteIds: number[] = [];
+export class HomeListComponent  {
+  private homeService = inject(HomeService);
 
-  constructor() {
-    this.loadFavoritesFromLocalStorage();
-  }
+  homes = signal<Home[]>([]);
 
   ngOnInit() {
-    this.homeService.getHomes().subscribe((homes) => {
-      this.homes = this.addFavoritesToHomes(homes);
+    this.homeService.getHomes().subscribe({
+      next: (homes) => this.homes.set(homes),
+      error: (err) => console.error("Error fetching homes:", err),
     });
-  }
-
-  toggleFavorite(homeId: number) {
-    if (this.favoriteIds.includes(homeId)) {
-      this.favoriteIds = this.favoriteIds.filter((id) => id !== homeId);
-    } else {
-      this.favoriteIds = [...this.favoriteIds, homeId];
-    }
-    this.saveFavoritesToLocalStorage();
-    this.homes = this.addFavoritesToHomes(this.homes);
-  }
-
-  private addFavoritesToHomes(homes: Home[]) {
-    return homes.map((home) => ({
-      ...home,
-      isFavorite: home.id ? this.favoriteIds.includes(home.id) : false,
-    }));
-  }
-
-  private loadFavoritesFromLocalStorage() {
-    const favorites = localStorage.getItem('favorites');
-    if (favorites) {
-      this.favoriteIds = JSON.parse(favorites);
-    }
-  }
-
-  private saveFavoritesToLocalStorage() {
-    localStorage.setItem('favorites', JSON.stringify(this.favoriteIds));
   }
 }

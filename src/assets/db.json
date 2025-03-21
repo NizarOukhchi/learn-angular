@@ -1,0 +1,124 @@
+{
+  "homes": [
+    {
+      "title": "Beautiful Family Home",
+      "description": "Spacious family home with a large backyard and modern amenities.",
+      "city": "San Francisco",
+      "rooms": 4,
+      "bathrooms": 2,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "title": "Modern Downtown Apartment",
+      "description": "Sleek and stylish apartment in the heart of downtown with amazing city views.",
+      "city": "New York",
+      "rooms": 2,
+      "bathrooms": 1,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "3",
+      "title": "Cozy Mountain Retreat",
+      "description": "Charming cabin nestled in the mountains with stunning views and peaceful surroundings.",
+      "city": "Denver",
+      "rooms": 3,
+      "bathrooms": 2,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1780&q=80"
+    },
+    {
+      "title": "Beachfront Villa",
+      "description": "Luxurious villa with direct beach access and panoramic ocean views.",
+      "city": "Miami",
+      "rooms": 5,
+      "bathrooms": 4,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80",
+      "id": "4"
+    },
+    {
+      "id": "5",
+      "title": "Urban Loft Space",
+      "description": "Industrial-style loft with high ceilings, exposed brick, and modern design elements.",
+      "city": "Chicago",
+      "rooms": 1,
+      "bathrooms": 1,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "6",
+      "title": "Suburban Family House",
+      "description": "Well-maintained family home in a quiet suburban neighborhood with good schools.",
+      "city": "Boston",
+      "rooms": 4,
+      "bathrooms": 2.5,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "7",
+      "title": "Countryside Cottage",
+      "description": "Charming cottage surrounded by nature with a beautiful garden and rustic interior.",
+      "city": "Portland",
+      "rooms": 2,
+      "bathrooms": 1,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1580483852940-0efc3589493e?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "id": "8",
+      "title": "Luxury Penthouse",
+      "description": "Spectacular penthouse with wraparound terrace, gourmet kitchen, and stunning cityscape views.",
+      "city": "Los Angeles",
+      "rooms": 3,
+      "bathrooms": 3,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1565623833408-d77e39b88af6?q=80&w=3132&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    },
+    {
+      "id": "9",
+      "title": "Historic Townhouse",
+      "description": "Beautifully restored historic townhouse with period features and modern comforts.",
+      "city": "Philadelphia",
+      "rooms": 3,
+      "bathrooms": 2.5,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "10",
+      "title": "Waterfront Property",
+      "description": "Stunning home with private dock, lakefront views, and spacious outdoor entertaining areas.",
+      "city": "Seattle",
+      "rooms": 4,
+      "bathrooms": 3,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80"
+    },
+    {
+      "id": "11",
+      "title": "Desert Oasis Home",
+      "description": "Modern retreat in the desert with pool, spa, and stunning mountain views.",
+      "city": "Phoenix",
+      "rooms": 3,
+      "bathrooms": 2,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1475&q=80"
+    },
+    {
+      "id": "12",
+      "title": "Eco-Friendly Home",
+      "description": "Sustainable home with solar panels, rainwater harvesting, and energy-efficient design.",
+      "city": "Austin",
+      "rooms": 3,
+      "bathrooms": 2,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1476&q=80"
+    }
+  ]
+}
