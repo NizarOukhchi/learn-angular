@@ -1,11 +1,14 @@
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { HomeService } from '../services/home.service';
 import { Home } from '../models/home.type';
-import { HomeCardComponent } from '../home-card/home-card.component';
+import { FavoriteHomesComponent } from '../favorite-homes/favorite-homes.component';
+import { HomesGridComponent } from '../homes-grid/homes-grid.component';
 
 @Component({
   selector: 'app-home-list',
-  imports: [HomeCardComponent],
+  standalone: true,
+  imports: [HomesGridComponent, FavoriteHomesComponent],
   templateUrl: './home-list.component.html',
   styleUrl: './home-list.component.css',
 })

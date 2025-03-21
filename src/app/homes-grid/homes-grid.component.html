@@ -1,0 +1,40 @@
+<div class="w-full mx-auto">
+    <!-- En-tête avec titre et tri -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+      <h2 class="text-3xl font-bold">Nos Maisons</h2>
+      <app-sort-homes (sortChange)="onSortChange($event)"></app-sort-homes>
+    </div>
+
+    <!-- État de chargement -->
+    @if (isLoading()) {
+    <div class="flex justify-center items-center min-h-[200px]">
+      <p class="text-gray-500">Chargement des maisons...</p>
+    </div>
+    } 
+    <!-- Message d'erreur -->
+    @else if (error()) {
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+      <p>{{ error() }}</p>
+    </div>
+    } 
+    <!-- Liste des maisons -->
+    @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (home of homes() ; track home.id) {
+      <app-home-card 
+        [home]="home"
+        (toggleFavorite)="onToggleFavorite($event)">
+      </app-home-card>
+      } @empty {
+      <p class="text-gray-500 col-span-3 text-center py-12">
+        Aucune maison trouvée. Veuillez réessayer plus tard.
+      </p>
+      }
+    </div>
+    }
+    
+    <!-- Pagination -->
+    <div class="mt-8">
+      <app-pagination></app-pagination>
+    </div>
+  </div>
