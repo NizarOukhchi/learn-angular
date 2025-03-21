@@ -1,17 +1,25 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { Home } from '../models/home.type';
-
+import { finalize } from 'rxjs/operators';
 const API_URL = 'http://localhost:3000/homes';
+
+type PaginatedResponse<T> = {
+  data: T;
+  pages: number;
+  items: number;
+};
 
 @Injectable({
   providedIn: 'root',
 })
 export class HomeService {
-  homes = signal<Home[]>([]);
+  paginatedHomes = signal<Home[]>([]);
   favoritesHomes = computed(() =>
-    this.homes().filter((home) => home.isFavorite)
+    this.paginatedHomes().filter((home) => home.isFavorite)
   );
+  totalHomes = signal<number>(0);
+  totalPages = signal<number>(0);
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
 
@@ -21,18 +29,25 @@ export class HomeService {
     this.loadFavoritesFromStorage();
   }
 
-  getAllHomes() {
+  fetchHomes(page: number = 1, limit: number = 6) {
+    let params = new HttpParams()
+      .set('_page', page.toString())
+      .set('_per_page', limit.toString());
+
     this.isLoading.set(true);
-    this.http.get<Home[]>(API_URL).subscribe({
-      next: (homes) => {
-        this.homes.set(this.addFavoriteStatus(homes));
-        this.isLoading.set(false);
-      },
-      error: (error) => {
-        this.error.set(error.message);
-        this.isLoading.set(false);
-      },
-    });
+    return this.http
+      .get<PaginatedResponse<Home[]>>(API_URL, { params })
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.paginatedHomes.set(this.addFavoriteStatus(response.data));
+          this.totalHomes.set(response.items);
+          this.totalPages.set(response.pages);
+        },
+        error: (error) => {
+          this.error.set(error.message);
+        },
+      });
   }
 
   toggleFavorite(homeId: number) {
@@ -42,7 +57,7 @@ export class HomeService {
       this.favoritesId = [...this.favoritesId, homeId];
     }
     this.saveFavoritesToStorage();
-    this.homes.update((homes) =>
+    this.paginatedHomes.update((homes) =>
       homes.map((home) => ({
         ...home,
         isFavorite: home.id === homeId ? !home.isFavorite : home.isFavorite,

@@ -1,21 +1,20 @@
 import { Component, inject } from '@angular/core';
 import { HomeService } from '../services/home.service';
-import { Home } from '../models/home.type';
 import { HomeCardComponent } from '../home-card/home-card.component';
-
+import { PaginationComponent } from '../pagination/pagination.component';
 @Component({
   selector: 'app-homes-grid',
-  imports: [HomeCardComponent],
+  imports: [HomeCardComponent, PaginationComponent],
   templateUrl: './homes-grid.component.html',
   styleUrl: './homes-grid.component.css',
 })
 export class HomesGridComponent {
   homeService = inject(HomeService);
-  homes = this.homeService.homes;
+  homes = this.homeService.paginatedHomes;
   isLoading = this.homeService.isLoading;
   error = this.homeService.error;
 
   ngOnInit(): void {
-    this.homeService.getAllHomes();
+    this.homeService.fetchHomes();
   }
 }
