@@ -1,10 +1,6 @@
-<!-- l interpolation  -->
-
-<!-- Home card -->
 <div
-  class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300"
+  class="h-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300"
 >
-  <!-- Home image -->
   <div class="h-48 overflow-hidden relative">
     <img
       [src]="home.picture"
@@ -21,23 +17,27 @@
         'bg-white': !home.isFavorite
       }"
     >
-      <lucide-icon [img]="Heart" [color]="home.isFavorite ? 'white' : 'gray'" class="w-5 h-5"></lucide-icon>
+      <lucide-icon
+        [img]="HeartIcon"
+        [color]="home.isFavorite ? 'white' : 'gray'"
+        class="w-5 h-5"
+      ></lucide-icon>
     </button>
   </div>
 
-  <!-- Home details -->
-  <div class="p-6">
-    <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ home.title }}</h3>
-    <p class="text-gray-600 mb-4 flex items-center gap-2">
-      <lucide-icon [img]="MapPin" class="my-icon" color="gray"></lucide-icon>
-      {{ home.city }}
-    </p>
+  <div class="flex flex-col gap-4 p-6">
+    <div class="flex flex-col gap-1">
+      <h3 class="text-xl font-semibold text-gray-800">{{ home.title }}</h3>
+      <div class="flex gap-1">
+        <lucide-icon [img]="MapPin" class="text-gray-400"></lucide-icon>
+        <p class="text-gray-400 mb">{{ home.city }}</p>
+      </div>
+    </div>
 
-    <!-- Property features in a row -->
-    <div class="flex justify-between text-sm text-gray-500 mb-4">
+    <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
         <lucide-icon
-          [img]="Bed"
+          [img]="BedIcon"
           class="my-icon"
           color="indigo"
         ></lucide-icon>
@@ -47,7 +47,7 @@
       </div>
       <div class="flex items-center gap-2">
         <lucide-icon
-          [img]="Bath"
+          [img]="BathIcon"
           class="my-icon"
           color="indigo"
         ></lucide-icon>
@@ -57,14 +57,12 @@
       </div>
       <div class="flex items-center gap-2">
         <lucide-icon
-          [img]="WavesLadder"
+          [img]="WavesLadderIcon"
           class="my-icon"
           [color]="home.hasPool ? 'blue' : 'gray'"
         ></lucide-icon>
       </div>
     </div>
-
-    <!-- Description with truncation -->
-    <p class="text-gray-700 mb-4 line-clamp-2">{{ home.description }}</p>
+    <p class="text-gray-700 mb-4">{{ home.description }}</p>
   </div>
 </div>
