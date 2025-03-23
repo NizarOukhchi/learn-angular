@@ -1,0 +1,20 @@
+<div class="w-full mx-auto">
+  <h2 class="text-3xl font-bold mb-6">Homes</h2>
+  @if(isLoading()) {
+  <div class="flex justify-center items-center h-screen">
+    <p class="text-gray-500">Loading homes...</p>
+  </div>
+  } @else if(error()) {
+  <div class="bg-red-500 text-white p-4 rounded-md border-2 border-red-600">
+    <p class="text-red-600">{{ error() }}</p>
+  </div>
+  } @else {
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    @for (home of homes(); track home.id) {
+    <app-home-card [home]="home"></app-home-card>
+    }@empty {
+    <p class="text-gray-500 text-center py-10">No homes found</p>
+    }
+  </div>
+  }
+</div>

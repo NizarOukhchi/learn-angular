@@ -119,6 +119,156 @@
       "bathrooms": 2,
       "hasPool": false,
       "picture": "https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1476&q=80"
+    },
+    {
+      "id": "13",
+      "title": "Modern Apartment",
+      "description": "Stylish apartment with modern design and city views.",
+      "city": "San Francisco",
+      "rooms": 2,
+      "bathrooms": 1,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "14",
+      "title": "Modern Apartment",
+      "description": "Stylish apartment with modern design and city views.",
+      "city": "San Francisco",
+      "rooms": 2,
+      "bathrooms": 1,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "15",
+      "title": "Modern Apartment",
+      "description": "Stylish apartment with modern design and city views.",
+      "city": "San Francisco",
+      "rooms": 2,
+      "bathrooms": 1,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "16",
+      "title": "Lakeside Cabin",
+      "description": "Rustic cabin with private lake access, perfect for fishing and outdoor activities.",
+      "city": "Minneapolis",
+      "rooms": 3,
+      "bathrooms": 1,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1587061949409-02df41d5e562?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "17",
+      "title": "Victorian Mansion",
+      "description": "Elegant Victorian-era mansion with ornate details and beautifully landscaped grounds.",
+      "city": "San Francisco",
+      "rooms": 6,
+      "bathrooms": 4.5,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1566908829550-e6551b00979b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "18",
+      "title": "Coastal Bungalow",
+      "description": "Charming bungalow just steps from the beach with coastal decor and ocean breezes.",
+      "city": "San Diego",
+      "rooms": 2,
+      "bathrooms": 1,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1510798831971-661eb04b3739?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "19",
+      "title": "Mountain View Chalet",
+      "description": "Stunning chalet with panoramic mountain views, perfect for ski enthusiasts.",
+      "city": "Aspen",
+      "rooms": 4,
+      "bathrooms": 3,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1482192505345-5655af888cc4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80"
+    },
+    {
+      "id": "20",
+      "title": "Urban Micro Apartment",
+      "description": "Cleverly designed micro apartment that maximizes space in the heart of the city.",
+      "city": "New York",
+      "rooms": 1,
+      "bathrooms": 1,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80"
+    },
+    {
+      "id": "21",
+      "title": "Converted Warehouse Loft",
+      "description": "Spacious loft in a converted warehouse with industrial features and artistic vibe.",
+      "city": "Brooklyn",
+      "rooms": 2,
+      "bathrooms": 2,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1476&q=80"
+    },
+    {
+      "id": "22",
+      "title": "Riverside Cottage",
+      "description": "Peaceful cottage on the riverbank with private dock and serene water views.",
+      "city": "Nashville",
+      "rooms": 3,
+      "bathrooms": 2,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1598228723793-52759bba239c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
+    },
+    {
+      "id": "23",
+      "title": "Golf Course Estate",
+      "description": "Luxury home overlooking a championship golf course with high-end finishes throughout.",
+      "city": "Scottsdale",
+      "rooms": 4,
+      "bathrooms": 3.5,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1592595896616-c37162298647?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      "id": "24",
+      "title": "Vineyard Estate",
+      "description": "Elegant home surrounded by vineyards with wine cellar and outdoor entertainment areas.",
+      "city": "Napa",
+      "rooms": 5,
+      "bathrooms": 4,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1543490258-4131d44881d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1472&q=80"
+    },
+    {
+      "id": "25",
+      "title": "Midcentury Modern Home",
+      "description": "Authentic midcentury modern home with period details and open floor plan.",
+      "city": "Palm Springs",
+      "rooms": 3,
+      "bathrooms": 2,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1530&q=80"
+    },
+    {
+      "id": "26",
+      "title": "Converted Schoolhouse",
+      "description": "Unique home in a converted historic schoolhouse with high ceilings and original features.",
+      "city": "Burlington",
+      "rooms": 3,
+      "bathrooms": 2,
+      "hasPool": false,
+      "picture": "https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
+    },
+    {
+      "id": "27",
+      "title": "Tropical Paradise Home",
+      "description": "Exotic home surrounded by tropical gardens with indoor-outdoor living spaces.",
+      "city": "Honolulu",
+      "rooms": 4,
+      "bathrooms": 3,
+      "hasPool": true,
+      "picture": "https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
     }
   ]
 }

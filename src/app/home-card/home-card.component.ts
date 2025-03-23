@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import {
   LucideAngularModule,
   MapPin,
@@ -9,6 +9,7 @@ import {
 } from 'lucide-angular';
 import { Home } from '../models/home.type';
 import { CommonModule } from '@angular/common';
+import { HomeService } from '../services/home.service';
 @Component({
   selector: 'app-home-card',
   imports: [CommonModule, LucideAngularModule],
@@ -17,7 +18,7 @@ import { CommonModule } from '@angular/common';
 })
 export class HomeCardComponent {
   @Input() home!: Home;
-  @Output() favoriteClick = new EventEmitter<number>();
+  homeService = inject(HomeService);
   // Icons list
   readonly MapPin = MapPin;
   readonly WavesLadderIcon = WavesLadder;
@@ -26,6 +27,6 @@ export class HomeCardComponent {
   readonly HeartIcon = Heart;
 
   onFavoriteClick() {
-    this.favoriteClick.emit(this.home.id);
+    this.homeService.toggleFavorite(this.home);
   }
 }

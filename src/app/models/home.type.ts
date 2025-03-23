@@ -1,5 +1,5 @@
 export type Home = {
-  id?: number;
+  id: number;
   title: string;
   description: string;
   city: string;
