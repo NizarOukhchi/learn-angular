@@ -1,0 +1,55 @@
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+    <h2 class="text-xl font-semibold mb-4">Filter Homes</h2>
+  
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- City filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+        <select class="w-full p-2 border rounded" [value]="filter().city || ''" (change)="updateFilter('city', $event)">
+          <option value="">All Cities</option>
+          @for (city of cities; track city) {
+          <option [value]="city">{{ city }}</option>
+          }
+        </select>
+      </div>
+  
+      <!-- Rooms filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Bedrooms</label>
+        <select class="w-full p-2 border rounded" [value]="filter().rooms || ''" (change)="updateFilter('rooms', $event)">
+          <option value="">Any</option>
+          @for (room of roomOptions; track room) {
+          <option [value]="room">{{ room }}+</option>
+          }
+        </select>
+      </div>
+  
+      <!-- Bathrooms filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Bathrooms</label>
+        <select class="w-full p-2 border rounded" [value]="filter().bathrooms || ''" (change)="updateFilter('bathrooms', $event)">
+          <option value="">Any</option>
+          @for (bathroom of bathroomOptions; track bathroom) {
+          <option [value]="bathroom">{{ bathroom }}+</option>
+          }
+        </select>
+      </div>
+  
+      <!-- Pool filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Swimming Pool</label>
+        <select class="w-full p-2 border rounded" [value]="filter().hasPool === undefined ? '' : filter().hasPool" (change)="updateFilter('hasPool', $event)">
+          <option value="">Any</option>
+          @for (option of poolOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  
+    <!-- Filter actions -->
+    <div class="flex justify-end mt-4 space-x-2">
+      <button (click)="clearFilter()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" [disabled]="!isFilterApplied()">Clear Filters</button>
+      <button (click)="applyFilter()" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 cursor-pointer">Apply Filters</button>
+    </div>
+  </div>

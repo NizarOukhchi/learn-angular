@@ -1,0 +1,68 @@
+<div
+  class="h-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300"
+>
+  <div class="h-48 overflow-hidden relative">
+    <img
+      [src]="home.picture"
+      [alt]="home.title"
+      class="w-full h-full object-cover"
+    />
+    <!-- Favorite button -->
+    <button
+      (click)="onFavoriteClick()"
+      class="absolute top-2 right-2 p-2 bg-opacity-80 rounded-full shadow-lg hover:bg-opacity-100 transition-all cursor-pointer"
+      aria-label="Toggle favorite"
+      [ngClass]="{
+        'bg-indigo-500': home.isFavorite,
+        'bg-white': !home.isFavorite
+      }"
+    >
+      <lucide-icon
+        [img]="HeartIcon"
+        [color]="home.isFavorite ? 'white' : 'gray'"
+        class="w-5 h-5"
+      ></lucide-icon>
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-4 p-6">
+    <div class="flex flex-col gap-1">
+      <h3 class="text-xl font-semibold text-gray-800">{{ home.title }}</h3>
+      <div class="flex gap-1">
+        <lucide-icon [img]="MapPin" class="text-gray-400"></lucide-icon>
+        <p class="text-gray-400 mb">{{ home.city }}</p>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <lucide-icon
+          [img]="BedIcon"
+          class="my-icon"
+          color="indigo"
+        ></lucide-icon>
+        <span class="text-indigo-900 font-medium"
+          >{{ home.rooms }} Bedrooms</span
+        >
+      </div>
+      <div class="flex items-center gap-2">
+        <lucide-icon
+          [img]="BathIcon"
+          class="my-icon"
+          color="indigo"
+        ></lucide-icon>
+        <span class="text-indigo-900 font-medium"
+          >{{ home.bathrooms }} Bathrooms</span
+        >
+      </div>
+      <div class="flex items-center gap-2">
+        <lucide-icon
+          [img]="WavesLadderIcon"
+          class="my-icon"
+          [color]="home.hasPool ? 'blue' : 'gray'"
+        ></lucide-icon>
+      </div>
+    </div>
+    <p class="text-gray-700 mb-4">{{ home.description }}</p>
+  </div>
+</div>

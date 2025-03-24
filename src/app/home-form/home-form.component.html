@@ -1,0 +1,83 @@
+<div class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-6">{{ isEditMode() ? 'Edit Home' : 'Add New Home' }}</h1>
+  
+    @if (errorMessage()) {
+    <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">{{ errorMessage() }}</div>
+    }
+  
+    <form [formGroup]="homeForm" (ngSubmit)="onSubmit()">
+      <!-- Title field -->
+      <div class="mb-4">
+        <label for="title" class="block text-sm font-medium text-gray-700 mb-1"> Title * </label>
+        <input type="text" id="title" formControlName="title" class="w-full p-2 border rounded" [class.border-red-500]="title?.invalid && title?.touched" />
+        @if (title?.invalid && title?.touched) {
+        <div class="text-red-500 text-sm mt-1">@if (title?.errors?.['required']) { Title is required } @else if (title?.errors?.['minlength']) { Title must be at least 5 characters } @else if (title?.errors?.['maxlength']) { Title cannot exceed 100 characters }</div>
+        }
+      </div>
+  
+      <!-- Description field -->
+      <div class="mb-4">
+        <label for="description" class="block text-sm font-medium text-gray-700 mb-1"> Description * </label>
+        <textarea id="description" formControlName="description" rows="4" class="w-full p-2 border rounded" [class.border-red-500]="description?.invalid && description?.touched"></textarea>
+        @if (description?.invalid && description?.touched) {
+        <div class="text-red-500 text-sm mt-1">@if (description?.errors?.['required']) { Description is required } @else if (description?.errors?.['minlength']) { Description must be at least 10 characters } @else if (description?.errors?.['maxlength']) { Description cannot exceed 500 characters }</div>
+        }
+      </div>
+  
+      <!-- City field -->
+      <div class="mb-4">
+        <label for="city" class="block text-sm font-medium text-gray-700 mb-1"> City * </label>
+        <select id="city" formControlName="city" class="w-full p-2 border rounded" [class.border-red-500]="city?.invalid && city?.touched">
+          <option value="">Select a city</option>
+          @for (cityOption of cities; track cityOption) {
+          <option [value]="cityOption">{{ cityOption }}</option>
+          }
+        </select>
+        @if (city?.invalid && city?.touched) {
+        <div class="text-red-500 text-sm mt-1">City is required</div>
+        }
+      </div>
+  
+      <!-- Rooms and Bathrooms fields in a row -->
+      <div class="flex gap-4 mb-4">
+        <div class="flex-1">
+          <label for="rooms" class="block text-sm font-medium text-gray-700 mb-1"> Bedrooms * </label>
+          <input type="number" id="rooms" formControlName="rooms" min="1" max="10" class="w-full p-2 border rounded" [class.border-red-500]="rooms?.invalid && rooms?.touched" />
+          @if (rooms?.invalid && rooms?.touched) {
+          <div class="text-red-500 text-sm mt-1">@if (rooms?.errors?.['required']) { Number of rooms is required } @else if (rooms?.errors?.['min'] || rooms?.errors?.['max']) { Rooms must be between 1 and 10 }</div>
+          }
+        </div>
+  
+        <div class="flex-1">
+          <label for="bathrooms" class="block text-sm font-medium text-gray-700 mb-1"> Bathrooms * </label>
+          <input type="number" id="bathrooms" formControlName="bathrooms" min="1" max="10" class="w-full p-2 border rounded" [class.border-red-500]="bathrooms?.invalid && bathrooms?.touched" />
+          @if (bathrooms?.invalid && bathrooms?.touched) {
+          <div class="text-red-500 text-sm mt-1">@if (bathrooms?.errors?.['required']) { Number of bathrooms is required } @else if (bathrooms?.errors?.['min'] || bathrooms?.errors?.['max']) { Bathrooms must be between 1 and 10 }</div>
+          }
+        </div>
+      </div>
+  
+      <!-- Has Pool field -->
+      <div class="mb-4">
+        <label class="flex items-center">
+          <input type="checkbox" id="hasPool" formControlName="hasPool" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+          <span class="ml-2 text-sm text-gray-700">Has Swimming Pool</span>
+        </label>
+      </div>
+  
+      <!-- Picture URL field -->
+      <div class="mb-6">
+        <label for="picture" class="block text-sm font-medium text-gray-700 mb-1"> Picture URL * </label>
+        <input type="text" id="picture" formControlName="picture" class="w-full p-2 border rounded" [class.border-red-500]="picture?.invalid && picture?.touched" placeholder="https://example.com/image.jpg" />
+        @if (picture?.invalid && picture?.touched) {
+        <div class="text-red-500 text-sm mt-1">@if (picture?.errors?.['required']) { Picture URL is required } @else if (picture?.errors?.['pattern']) { Please enter a valid URL (starting with http:// or https://) }</div>
+        }
+      </div>
+  
+      <!-- Form actions -->
+      <div class="flex justify-between">
+        <button type="button" routerLink="/homes" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Cancel</button>
+        <button type="submit" [disabled]="homeForm.invalid || isSubmitting()" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50">{{ isSubmitting() ? 'Saving...' : (isEditMode() ? 'Update Home' : 'Create Home') }}</button>
+      </div>
+    </form>
+  </div>
