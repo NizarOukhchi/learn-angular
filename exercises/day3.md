@@ -8,7 +8,7 @@ This is the take-home exercise for Day 3. Today, you'll build on your Day 2 prog
 
 - Implement pagination for the homes list
 - Create a reusable pagination component
-- Create a favorites section to display favorited homes
+- Create a favorites section to display favorite homes
 - Update the service layer to support pagination
 - Continue working with Angular signals for reactive state management
 - Apply Angular's control flow syntax to the new components
@@ -535,8 +535,8 @@ Now that you have the basic functionality working, try implementing these additi
 
 1. Add sorting capabilities (by number of rooms, city, etc.)
 2. Implement a search bar for keyword search
-3. Create a detail view for each home that shows more information
-4. Add transitions and animations for a smoother user experience
+3. Try to manage favorite state in the backend using json-server
+4. Try to use local storage to save the whole element
 5. Implement skeleton loading states instead of "Loading..." text
 
 ## Additional Resources

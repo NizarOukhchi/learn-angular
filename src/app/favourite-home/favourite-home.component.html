@@ -1,0 +1,12 @@
+<div class="flex flex-col gap-4">
+  <h2 class="text-3xl font-bold">Favorites</h2>
+  @if(favoritesHomes().length > 0) {
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    @for (home of favoritesHomes(); track home.id) {
+    <app-home-card [home]="home"></app-home-card>
+    }
+  </div>
+  } @else {
+  <p class="text-gray-500 text-center py-10">No favorites found in this page</p>
+  }
+</div>
